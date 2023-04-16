@@ -16,21 +16,51 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-ByteStream::ByteStream(const size_t capacity) { DUMMY_CODE(capacity); }
+ByteStream::ByteStream(const size_t capacity) : _buffer_capacity(capacity) {}
 
 size_t ByteStream::write(const string &data) {
-    DUMMY_CODE(data);
-    return {};
+    size_t len = data.size();
+    if (len > remaining_capacity())
+    {
+        len = remaining_capacity();
+    }
+    _total_size_write += len;
+    for (size_t i = 0; i < len; ++i)
+    {
+        _container.push_back(data[i]);
+    }
+    return len;
 }
 
 //! \param[in] len bytes will be copied from the output side of the buffer
 string ByteStream::peek_output(const size_t len) const {
-    DUMMY_CODE(len);
-    return {};
+    size_t sz = len;
+    if (sz > buffer_size())
+    {
+        sz = buffer_size();
+    }
+    // string s;
+    // for (size_t i = 0; i < sz; ++i)
+    // {
+    //     s.push_back(_container.at(i));
+    // }
+    // return 0;
+    return string().assign(_container.cbegin(), _container.cbegin() + sz);
 }
 
 //! \param[in] len bytes will be removed from the output side of the buffer
-void ByteStream::pop_output(const size_t len) { DUMMY_CODE(len); }
+void ByteStream::pop_output(const size_t len) { 
+   size_t sz = len;
+    if (sz > buffer_size())
+    {
+        sz = buffer_size();
+    }
+    for (size_t i = 0; i < sz; ++i)
+    {
+        _container.pop_front();
+    }
+    _total_size_read += sz;
+}
 
 void ByteStream::end_input() {}
 
