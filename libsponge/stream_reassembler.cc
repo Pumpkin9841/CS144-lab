@@ -25,9 +25,10 @@ long StreamReassembler::merge_block(block_node &elm1, const block_node &elm2) {
         x = elm1;
         y = elm2;
     }
+    //没有交集 不用merge 返回-1
     if(x.begin + x.length < y.begin) {
-        //没有交集 不用merge 返回-1
         return -1;
+    //x 覆盖了 y, 合并之后数据为x，合并长度也就是交集长度，为y的数据长度
     } else if(x.begin + x.length >= y.begin + y.length) {
         elm1 = x;
         return y.length;
@@ -51,6 +52,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     block_node elm;
     if(index + data.length() <= _head_index) {
         goto JUDGE_EOF;
+    //子串前缀重叠
     } else if(index < _head_index) {
         size_t offset = _head_index - index;
         elm.begin = index + offset;
@@ -64,6 +66,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 
     _unassembler_byte = elm.length;
 
+    //子串重叠，合并子串
     do {
         long merged_bytes = 0;
         auto iter = _blocks.lower_bound(elm);
@@ -90,7 +93,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     }while(false);
     _blocks.insert(elm);
 
-    //write to ByteStream
+    //写入字节流
     if(!_blocks.empty() && _blocks.begin()->begin == _head_index) {
         const block_node head_node = *_blocks.begin();
         size_t write_bytes = _output.write(head_node.data);
