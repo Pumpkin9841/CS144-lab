@@ -45,6 +45,7 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
         }
         _fin_flag = true;
         ret = true;
+    // 不是FIN，也不是SYN，检查边界
     } else if(seg.length_in_sequence_space() == 0 && abs_seqno == _base) {
         return true;
     } else if(abs_seqno >= _base + window_size() || abs_seqno + length <= _base) {
