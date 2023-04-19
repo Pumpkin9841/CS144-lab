@@ -6,7 +6,7 @@
 #include "tcp_segment.hh"
 #include "wrapping_integers.hh"
 
-#include <optional>
+#include<optional>
 
 //! \brief The "receiver" part of a TCP implementation.
 
@@ -16,7 +16,10 @@
 class TCPReceiver {
     //! Our data structure for re-assembling bytes.
     StreamReassembler _reassembler;
-
+    bool _syn_flag = false;
+    bool _fin_flag = false;
+    size_t _base = 0;
+    size_t _isn = 0;
     //! The maximum number of bytes we'll store.
     size_t _capacity;
 
@@ -65,3 +68,4 @@ class TCPReceiver {
 };
 
 #endif  // SPONGE_LIBSPONGE_TCP_RECEIVER_HH
+
